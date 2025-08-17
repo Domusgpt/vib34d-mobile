@@ -3,85 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VIB34D Mobile v4 - Holographic Visualization Engine</title>
+    <title>VIB34D Mobile v4 - Your Actual System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #ffffff;
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
             overflow: hidden;
             height: 100vh;
             touch-action: manipulation;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(0, 255, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 0, 255, 0.15) 0%, transparent 40%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 40%, #16213e 70%, #0f1419 100%);
         }
         
-        /* Mobile-optimized canvas container */
-        .canvas-container {
+        /* Top bar with system buttons */
+        .top-bar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            right: 0;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 2px solid #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+        }
+        
+        .system-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .system-btn {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            transition: all 0.3s;
+            border-radius: 6px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .system-btn.active {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            color: #ff00ff;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+        
+        /* Canvas container - takes most of screen */
+        .canvas-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 50vh;
             z-index: 1;
         }
         
-        /* Single adaptive canvas - switches systems instead of overlaying */
-        #main-canvas {
+        /* 20-canvas mobile architecture - use your actual layer names */
+        .holographic-layers {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
+        }
+        
+        .holographic-layers canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             touch-action: none;
         }
         
-        /* Mobile-first UI overlay */
-        .ui-overlay {
+        /* Control panel - bottom half of screen */
+        .control-panel {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.8);
+            height: 50vh;
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid #00ffff;
+            padding: 15px;
+            overflow-y: auto;
             backdrop-filter: blur(10px);
             z-index: 100;
-            padding: 15px;
-            transform: translateY(0);
-            transition: transform 0.3s ease;
         }
         
-        .ui-overlay.hidden {
-            transform: translateY(100%);
-        }
-        
-        /* System tabs - horizontal scroll for mobile */
-        .system-tabs {
-            display: flex;
-            gap: 10px;
+        .panel-header {
+            font-size: 1rem;
+            color: #ff00ff;
             margin-bottom: 15px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-        
-        .system-tab {
-            flex-shrink: 0;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            color: #ffffff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 80px;
             text-align: center;
-            font-size: 14px;
+            text-shadow: 0 0 10px #ff00ff;
         }
         
-        .system-tab.active {
-            background: rgba(0, 255, 255, 0.3);
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 0.8rem;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        /* Geometry grid - mobile optimized */
+        .geometry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .geom-btn {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            padding: 12px 8px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s;
+            border-radius: 6px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .geom-btn.active {
+            background: rgba(0, 255, 255, 0.4);
             border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
         }
         
-        /* LLM interface - prominent on mobile */
+        /* Mobile-friendly sliders */
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+        }
+        
+        .control-value {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        .control-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            background: rgba(0, 255, 255, 0.2);
+            outline: none;
+            border-radius: 4px;
+            min-height: 44px;
+        }
+        
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        /* LLM section */
         .llm-section {
             margin-bottom: 15px;
         }
@@ -95,10 +245,7 @@
             color: #ffffff;
             font-size: 16px;
             margin-bottom: 10px;
-        }
-        
-        .llm-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Orbitron', monospace;
         }
         
         .llm-button {
@@ -112,252 +259,398 @@
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s ease;
+            font-family: 'Orbitron', monospace;
+            min-height: 44px;
         }
         
         .llm-button:active {
             transform: scale(0.98);
         }
         
-        /* Hide toggle button */
-        .ui-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            color: #ffffff;
-            cursor: pointer;
-            z-index: 101;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        
-        /* Quick parameter controls - minimal for mobile */
-        .quick-controls {
+        /* Action buttons row */
+        .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         
-        .quick-control {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px;
-            text-align: center;
+        .panel-btn {
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            color: #ff00ff;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            border-radius: 6px;
+            font-family: 'Orbitron', monospace;
+            min-height: 44px;
         }
         
-        .quick-control label {
-            font-size: 12px;
-            display: block;
-            margin-bottom: 5px;
-        }
-        
-        .quick-control input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #00ffff;
-            text-align: center;
+        .panel-btn:hover {
+            background: rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
         }
     </style>
 </head>
 <body>
-    <!-- Single adaptive canvas -->
-    <div class="canvas-container">
-        <canvas id="main-canvas"></canvas>
-    </div>
-    
-    <!-- UI toggle button -->
-    <div class="ui-toggle" onclick="toggleUI()">⚙️</div>
-    
-    <!-- Mobile UI overlay -->
-    <div class="ui-overlay" id="ui-overlay">
-        <!-- System selection tabs -->
-        <div class="system-tabs">
-            <div class="system-tab active" onclick="switchSystem('faceted')">Faceted</div>
-            <div class="system-tab" onclick="switchSystem('quantum')">Quantum</div>
-            <div class="system-tab" onclick="switchSystem('holographic')">Holographic</div>
+    <!-- Top Bar with System Selection -->
+    <div class="top-bar">
+        <div class="logo">VIB34D MOBILE</div>
+        
+        <div class="system-selector">
+            <button class="system-btn active" data-system="faceted" onclick="switchSystem('faceted')">
+                🔷 Faceted
+            </button>
+            <button class="system-btn" data-system="quantum" onclick="switchSystem('quantum')">
+                🌌 Quantum
+            </button>
+            <button class="system-btn" data-system="holographic" onclick="switchSystem('holographic')">
+                ✨ Holographic
+            </button>
+            <button class="system-btn" data-system="polychora" onclick="switchSystem('polychora')">
+                🔮 Polychora
+            </button>
         </div>
         
-        <!-- LLM interface -->
-        <div class="llm-section">
+        <div class="action-buttons">
+            <button class="action-btn" onclick="openGallery()" title="Gallery">🖼️</button>
+            <button class="action-btn" onclick="toggleAudio()" title="Audio">🎵</button>
+        </div>
+    </div>
+    
+    <!-- Canvas Container - Your 20-canvas architecture -->
+    <div class="canvas-container" id="canvasContainer">
+        <!-- VIB34D Faceted System Canvases -->
+        <div class="holographic-layers" id="vib34dLayers" style="display: block;">
+            <canvas id="background-canvas"></canvas>
+            <canvas id="shadow-canvas"></canvas>
+            <canvas id="content-canvas"></canvas>
+            <canvas id="highlight-canvas"></canvas>
+            <canvas id="accent-canvas"></canvas>
+        </div>
+        
+        <!-- VIB34D Quantum System Canvases -->
+        <div class="holographic-layers" id="quantumLayers" style="display: none;">
+            <canvas id="quantum-background-canvas"></canvas>
+            <canvas id="quantum-shadow-canvas"></canvas>
+            <canvas id="quantum-content-canvas"></canvas>
+            <canvas id="quantum-highlight-canvas"></canvas>
+            <canvas id="quantum-accent-canvas"></canvas>
+        </div>
+        
+        <!-- Holographic System Canvases -->
+        <div class="holographic-layers" id="holographicLayers" style="display: none;">
+            <canvas id="holo-background-canvas"></canvas>
+            <canvas id="holo-shadow-canvas"></canvas>
+            <canvas id="holo-content-canvas"></canvas>
+            <canvas id="holo-highlight-canvas"></canvas>
+            <canvas id="holo-accent-canvas"></canvas>
+        </div>
+        
+        <!-- Polychora System Canvases -->
+        <div class="holographic-layers" id="polychoraLayers" style="display: none;">
+            <canvas id="polychora-background-canvas"></canvas>
+            <canvas id="polychora-shadow-canvas"></canvas>
+            <canvas id="polychora-content-canvas"></canvas>
+            <canvas id="polychora-highlight-canvas"></canvas>
+            <canvas id="polychora-accent-canvas"></canvas>
+        </div>
+    </div>
+    
+    <!-- Control Panel - Bottom Half -->
+    <div class="control-panel" id="controlPanel">
+        <div class="panel-header" id="panelHeader">
+            <span>FACETED SYSTEM</span>
+        </div>
+        
+        <!-- LLM Section -->
+        <div class="control-section">
+            <div class="section-title">AI PARAMETER GENERATION</div>
             <input type="text" class="llm-input" id="llm-input" placeholder="Describe the visual you want...">
             <button class="llm-button" onclick="generateFromLLM()">🤖 Generate with AI</button>
         </div>
         
-        <!-- Quick manual controls -->
-        <div class="quick-controls">
-            <div class="quick-control">
-                <label>Chaos</label>
-                <input type="range" min="0" max="1" step="0.1" value="0.2" oninput="updateParam('chaos', this.value)">
+        <!-- Geometry Section -->
+        <div class="control-section" id="geometrySection">
+            <div class="section-title">GEOMETRY</div>
+            <div class="geometry-grid" id="geometryGrid">
+                <!-- Will be populated by system -->
             </div>
-            <div class="quick-control">
-                <label>Speed</label>
-                <input type="range" min="0.1" max="3" step="0.1" value="1" oninput="updateParam('speed', this.value)">
+        </div>
+        
+        <!-- 4D Rotation Section -->
+        <div class="control-section">
+            <div class="section-title">4D ROTATION</div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>XW Plane</span>
+                    <span class="control-value" id="xwValue">0.00</span>
+                </div>
+                <input type="range" class="control-slider" id="rot4dXW" 
+                       min="-6.28" max="6.28" step="0.01" value="0" 
+                       oninput="updateParameter('rot4dXW', this.value)">
             </div>
-            <div class="quick-control">
-                <label>Intensity</label>
-                <input type="range" min="0" max="1" step="0.1" value="0.5" oninput="updateParam('intensity', this.value)">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>YW Plane</span>
+                    <span class="control-value" id="ywValue">0.00</span>
+                </div>
+                <input type="range" class="control-slider" id="rot4dYW" 
+                       min="-6.28" max="6.28" step="0.01" value="0" 
+                       oninput="updateParameter('rot4dYW', this.value)">
             </div>
-            <div class="quick-control">
-                <label>Hue</label>
-                <input type="range" min="0" max="360" step="10" value="200" oninput="updateParam('hue', this.value)">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>ZW Plane</span>
+                    <span class="control-value" id="zwValue">0.00</span>
+                </div>
+                <input type="range" class="control-slider" id="rot4dZW" 
+                       min="-6.28" max="6.28" step="0.01" value="0" 
+                       oninput="updateParameter('rot4dZW', this.value)">
             </div>
+        </div>
+        
+        <!-- Visual Parameters -->
+        <div class="control-section">
+            <div class="section-title">VISUAL</div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Density</span>
+                    <span class="control-value" id="densityValue">15</span>
+                </div>
+                <input type="range" class="control-slider" id="gridDensity" 
+                       min="5" max="100" step="1" value="15" 
+                       oninput="updateParameter('gridDensity', this.value)">
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Morph</span>
+                    <span class="control-value" id="morphValue">1.0</span>
+                </div>
+                <input type="range" class="control-slider" id="morphFactor" 
+                       min="0" max="2" step="0.1" value="1" 
+                       oninput="updateParameter('morphFactor', this.value)">
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Chaos</span>
+                    <span class="control-value" id="chaosValue">0.2</span>
+                </div>
+                <input type="range" class="control-slider" id="chaos" 
+                       min="0" max="1" step="0.1" value="0.2" 
+                       oninput="updateParameter('chaos', this.value)">
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Speed</span>
+                    <span class="control-value" id="speedValue">1.0</span>
+                </div>
+                <input type="range" class="control-slider" id="speed" 
+                       min="0.1" max="3" step="0.1" value="1" 
+                       oninput="updateParameter('speed', this.value)">
+            </div>
+        </div>
+        
+        <!-- Color Section -->
+        <div class="control-section">
+            <div class="section-title">COLOR</div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Hue</span>
+                    <span class="control-value" id="hueValue">200</span>
+                </div>
+                <input type="range" class="control-slider" id="hue" 
+                       min="0" max="360" step="1" value="200" 
+                       oninput="updateParameter('hue', this.value)">
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Intensity</span>
+                    <span class="control-value" id="intensityValue">0.5</span>
+                </div>
+                <input type="range" class="control-slider" id="intensity" 
+                       min="0" max="1" step="0.1" value="0.5" 
+                       oninput="updateParameter('intensity', this.value)">
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Saturation</span>
+                    <span class="control-value" id="saturationValue">0.8</span>
+                </div>
+                <input type="range" class="control-slider" id="saturation" 
+                       min="0" max="1" step="0.1" value="0.8" 
+                       oninput="updateParameter('saturation', this.value)">
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-row">
+            <button class="panel-btn" onclick="randomizeAll()">🎲 Random</button>
+            <button class="panel-btn" onclick="saveToGallery()">💾 Save</button>
         </div>
     </div>
 
     <script type="module">
-        // Mobile-optimized VIB34D engine
-        class MobileVIB34DEngine {
-            constructor() {
-                this.canvas = document.getElementById('main-canvas');
-                this.currentSystem = 'faceted';
-                this.engines = {};
-                this.parameters = {
-                    geometry: 0,
-                    gridDensity: 30,
-                    chaos: 0.2,
-                    morphFactor: 1.0,
-                    speed: 1.0,
-                    hue: 200,
-                    intensity: 0.5,
-                    saturation: 0.8,
-                    rot4dXW: 0,
-                    rot4dYW: 0,
-                    rot4dZW: 0
-                };
+        // Your actual VIB34D mobile system
+        import { VIB34DIntegratedEngine } from './src/core/Engine.js';
+        import { QuantumEngine } from './src/quantum/QuantumEngine.js';
+        import { RealHolographicSystem } from './src/holograms/RealHolographicSystem.js';
+        import { PolychoraSystem } from './src/core/PolychoraSystem.js';
+        
+        // Global state
+        window.currentSystem = 'faceted';
+        window.engines = {};
+        window.moduleReady = false;
+        
+        // Geometry definitions (your actual ones)
+        const geometries = {
+            faceted: ['Tetrahedron', 'Hypercube', 'Sphere', 'Torus', 'Klein Bottle', 'Fractal', 'Wave', 'Crystal'],
+            quantum: ['Quantum Field', 'Quantum Lattice', 'Quantum Bubble', 'Quantum Torus', 'Quantum Klein', 'Quantum Fractal', 'Quantum Wave', 'Quantum Crystal'],
+            holographic: ['Holo Field', 'Holo Lattice', 'Holo Sphere', 'Holo Torus', 'Holo Klein', 'Holo Fractal', 'Holo Wave', 'Holo Crystal'],
+            polychora: ['5-Cell', 'Tesseract', '16-Cell', '24-Cell', '600-Cell', '120-Cell', 'Polytope-A', 'Polytope-B']
+        };
+        
+        // Initialize systems
+        async function initSystems() {
+            try {
+                console.log('🚀 Initializing VIB34D Mobile Systems...');
                 
-                this.init();
-            }
-            
-            async init() {
-                try {
-                    // Load only the current system's engine to save resources
-                    await this.loadSystem(this.currentSystem);
-                    this.setupCanvas();
-                    this.startRender();
-                    console.log('✅ Mobile VIB34D Engine initialized');
-                } catch (error) {
-                    console.error('❌ Mobile engine init failed:', error);
-                }
-            }
-            
-            async loadSystem(systemName) {
-                if (this.engines[systemName]) return;
+                // Initialize faceted system (default)
+                window.engines.faceted = new VIB34DIntegratedEngine();
                 
-                console.log(`📱 Loading ${systemName} system for mobile...`);
+                // Set system as ready
+                window.moduleReady = true;
+                populateGeometryGrid('faceted');
                 
-                try {
-                    switch (systemName) {
-                        case 'faceted':
-                            const { VIB34DIntegratedEngine } = await import('./src/core/Engine.js');
-                            this.engines.faceted = new VIB34DIntegratedEngine();
-                            break;
-                        case 'quantum':
-                            const { QuantumEngine } = await import('./src/quantum/QuantumEngine.js');
-                            this.engines.quantum = new QuantumEngine();
-                            break;
-                        case 'holographic':
-                            const { RealHolographicSystem } = await import('./src/holograms/RealHolographicSystem.js');
-                            this.engines.holographic = new RealHolographicSystem();
-                            break;
-                    }
-                    console.log(`✅ ${systemName} system loaded`);
-                } catch (error) {
-                    console.error(`❌ Failed to load ${systemName}:`, error);
-                }
-            }
-            
-            setupCanvas() {
-                const rect = this.canvas.getBoundingClientRect();
-                const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for performance
+                console.log('✅ VIB34D Mobile v4 initialized');
                 
-                this.canvas.width = rect.width * dpr;
-                this.canvas.height = rect.height * dpr;
-                
-                // Setup WebGL context
-                const gl = this.canvas.getContext('webgl2', {
-                    alpha: true,
-                    antialias: false, // Disable for mobile performance
-                    powerPreference: 'high-performance'
-                });
-                
-                if (!gl) {
-                    console.error('❌ WebGL not supported');
-                    return;
-                }
-                
-                this.gl = gl;
-                console.log(`📱 Canvas setup: ${this.canvas.width}x${this.canvas.height}`);
-            }
-            
-            async switchSystem(newSystem) {
-                if (newSystem === this.currentSystem) return;
-                
-                console.log(`🔄 Switching from ${this.currentSystem} to ${newSystem}`);
-                
-                // Load new system if needed
-                await this.loadSystem(newSystem);
-                
-                // Update UI
-                document.querySelectorAll('.system-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                document.querySelector(`[onclick="switchSystem('${newSystem}')"]`).classList.add('active');
-                
-                this.currentSystem = newSystem;
-                
-                // Apply current parameters to new system
-                this.updateCurrentSystem();
-            }
-            
-            updateParameter(param, value) {
-                this.parameters[param] = parseFloat(value);
-                this.updateCurrentSystem();
-            }
-            
-            updateCurrentSystem() {
-                const engine = this.engines[this.currentSystem];
-                if (engine && engine.updateParameters) {
-                    engine.updateParameters(this.parameters);
-                }
-            }
-            
-            startRender() {
-                const render = () => {
-                    const engine = this.engines[this.currentSystem];
-                    if (engine && engine.render) {
-                        engine.render();
-                    }
-                    requestAnimationFrame(render);
-                };
-                render();
+            } catch (error) {
+                console.error('❌ Failed to initialize systems:', error);
             }
         }
-
-        // Global functions for mobile UI
-        window.mobileEngine = new MobileVIB34DEngine();
         
-        window.switchSystem = async (system) => {
-            await window.mobileEngine.switchSystem(system);
+        // System switching function
+        window.switchSystem = async function(systemName) {
+            if (systemName === window.currentSystem) return;
+            
+            console.log(`🔄 Switching to ${systemName} system`);
+            
+            // Hide all canvas layers
+            document.querySelectorAll('.holographic-layers').forEach(layer => {
+                layer.style.display = 'none';
+            });
+            
+            // Show target system layers
+            const targetLayers = {
+                'faceted': 'vib34dLayers',
+                'quantum': 'quantumLayers',
+                'holographic': 'holographicLayers',
+                'polychora': 'polychoraLayers'
+            };
+            
+            const layerId = targetLayers[systemName];
+            if (layerId) {
+                document.getElementById(layerId).style.display = 'block';
+            }
+            
+            // Update system buttons
+            document.querySelectorAll('.system-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-system="${systemName}"]`).classList.add('active');
+            
+            // Load system engine if needed
+            if (!window.engines[systemName]) {
+                try {
+                    switch (systemName) {
+                        case 'quantum':
+                            window.engines.quantum = new QuantumEngine();
+                            break;
+                        case 'holographic':
+                            window.engines.holographic = new RealHolographicSystem();
+                            break;
+                        case 'polychora':
+                            window.engines.polychora = new PolychoraSystem();
+                            break;
+                    }
+                } catch (error) {
+                    console.error(`Failed to load ${systemName} engine:`, error);
+                    return;
+                }
+            }
+            
+            // Update current system
+            window.currentSystem = systemName;
+            
+            // Update UI
+            document.getElementById('panelHeader').innerHTML = `<span>${systemName.toUpperCase()} SYSTEM</span>`;
+            populateGeometryGrid(systemName);
+            
+            console.log(`✅ Switched to ${systemName} system`);
         };
         
-        window.updateParam = (param, value) => {
-            window.mobileEngine.updateParameter(param, value);
+        // Populate geometry grid
+        function populateGeometryGrid(systemName) {
+            const grid = document.getElementById('geometryGrid');
+            const systemGeometries = geometries[systemName] || geometries.faceted;
+            
+            grid.innerHTML = systemGeometries.map((name, index) => `
+                <button class="geom-btn ${index === 0 ? 'active' : ''}" 
+                        data-index="${index}" 
+                        onclick="selectGeometry(${index})">
+                    ${name}
+                </button>
+            `).join('');
+        }
+        
+        // Parameter update function
+        window.updateParameter = function(param, value) {
+            const numValue = parseFloat(value);
+            
+            // Update display value
+            const displayMap = {
+                'rot4dXW': 'xwValue',
+                'rot4dYW': 'ywValue', 
+                'rot4dZW': 'zwValue',
+                'gridDensity': 'densityValue',
+                'morphFactor': 'morphValue',
+                'chaos': 'chaosValue',
+                'speed': 'speedValue',
+                'hue': 'hueValue',
+                'intensity': 'intensityValue',
+                'saturation': 'saturationValue'
+            };
+            
+            const displayId = displayMap[param];
+            if (displayId) {
+                const display = document.getElementById(displayId);
+                if (display) {
+                    display.textContent = param.includes('rot4d') ? numValue.toFixed(2) : numValue;
+                }
+            }
+            
+            // Apply to current engine
+            const currentEngine = window.engines[window.currentSystem];
+            if (currentEngine && currentEngine.parameterManager) {
+                currentEngine.parameterManager.setParameter(param, numValue);
+            }
         };
         
-        window.toggleUI = () => {
-            const overlay = document.getElementById('ui-overlay');
-            overlay.classList.toggle('hidden');
+        // Geometry selection
+        window.selectGeometry = function(index) {
+            document.querySelectorAll('.geom-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('active');
+            
+            const currentEngine = window.engines[window.currentSystem];
+            if (currentEngine && currentEngine.parameterManager) {
+                currentEngine.parameterManager.setGeometry(index);
+            }
         };
         
-        window.generateFromLLM = async () => {
+        // LLM generation
+        window.generateFromLLM = async function() {
             const input = document.getElementById('llm-input');
             const description = input.value.trim();
             
@@ -369,7 +662,6 @@
             try {
                 console.log('🤖 Generating parameters for:', description);
                 
-                // Call Firebase Function
                 const response = await fetch('https://us-central1-vib34d-llm-engine.cloudfunctions.net/generateVIB34DParameters', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -383,29 +675,20 @@
                 
                 console.log('🤖 Generated parameters:', parameters);
                 
-                // Smart system selection for mobile
-                let targetSystem = 'faceted';
-                if (parameters.chaos > 0.7 && parameters.speed > 2.0) {
-                    targetSystem = 'quantum';
-                } else if (parameters.intensity > 0.8 && parameters.saturation > 0.8) {
-                    targetSystem = 'holographic';
-                }
-                
-                // Switch system first
-                await window.switchSystem(targetSystem);
-                
-                // Apply parameters
+                // Apply parameters to current system
                 Object.entries(parameters).forEach(([param, value]) => {
-                    window.updateParam(param, value);
+                    if (param === 'geometry') {
+                        selectGeometry(value);
+                    } else {
+                        const slider = document.getElementById(param);
+                        if (slider) {
+                            slider.value = value;
+                            updateParameter(param, value);
+                        }
+                    }
                 });
                 
-                // Update UI sliders
-                document.querySelector('input[oninput*="chaos"]').value = parameters.chaos || 0.2;
-                document.querySelector('input[oninput*="speed"]').value = parameters.speed || 1.0;
-                document.querySelector('input[oninput*="intensity"]').value = parameters.intensity || 0.5;
-                document.querySelector('input[oninput*="hue"]').value = parameters.hue || 200;
-                
-                input.value = ''; // Clear input
+                input.value = '';
                 
             } catch (error) {
                 console.error('❌ LLM generation failed:', error);
@@ -413,18 +696,57 @@
             }
         };
         
-        // Touch event handling for mobile
-        let touchStartY = 0;
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        });
+        // Utility functions
+        window.randomizeAll = function() {
+            // Randomize all sliders
+            const sliders = document.querySelectorAll('.control-slider');
+            sliders.forEach(slider => {
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const value = Math.random() * (max - min) + min;
+                slider.value = value;
+                updateParameter(slider.id, value);
+            });
+            
+            // Random geometry
+            const systemGeometries = geometries[window.currentSystem];
+            const randomIndex = Math.floor(Math.random() * systemGeometries.length);
+            selectGeometry(randomIndex);
+        };
         
-        document.addEventListener('touchmove', (e) => {
-            // Prevent page scrolling
-            e.preventDefault();
-        }, { passive: false });
+        window.saveToGallery = function() {
+            // Placeholder for save functionality
+            console.log('💾 Save to gallery functionality - to be implemented');
+            alert('Save functionality coming soon!');
+        };
         
-        console.log('📱 VIB34D Mobile v4 ready');
+        window.openGallery = function() {
+            // Placeholder for gallery
+            console.log('🖼️ Gallery functionality - to be implemented');
+            alert('Gallery functionality coming soon!');
+        };
+        
+        window.toggleAudio = function() {
+            // Placeholder for audio
+            console.log('🎵 Audio functionality - to be implemented');
+            alert('Audio functionality coming soon!');
+        };
+        
+        // Initialize on load
+        initSystems();
+        
+        // Touch handling
+        document.addEventListener('touchstart', function(e) {
+            e.target.classList.add('touch-active');
+        }, { passive: true });
+        
+        document.addEventListener('touchend', function(e) {
+            setTimeout(() => {
+                e.target.classList.remove('touch-active');
+            }, 150);
+        }, { passive: true });
+        
+        console.log('📱 VIB34D Mobile v4 - Using YOUR ACTUAL SYSTEM');
     </script>
 </body>
 </html>
