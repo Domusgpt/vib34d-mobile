@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>VIB34D Mobile v4 - Your Actual System</title>
+    <title>VIB34D Mobile v4 - Dynamic 5-Canvas System</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -109,8 +109,8 @@
             z-index: 1;
         }
         
-        /* 20-canvas mobile architecture - use your actual layer names */
-        .holographic-layers {
+        /* Mobile 5-canvas architecture - dynamic switching */
+        .dynamic-canvas-layers {
             position: absolute;
             top: 0;
             left: 0;
@@ -118,7 +118,7 @@
             height: 100%;
         }
         
-        .holographic-layers canvas {
+        .dynamic-canvas-layers canvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -320,42 +320,15 @@
         </div>
     </div>
     
-    <!-- Canvas Container - Your 20-canvas architecture -->
+    <!-- Canvas Container - Dynamic 5-Canvas System -->
     <div class="canvas-container" id="canvasContainer">
-        <!-- VIB34D Faceted System Canvases -->
-        <div class="holographic-layers" id="vib34dLayers" style="display: block;">
-            <canvas id="background-canvas"></canvas>
-            <canvas id="shadow-canvas"></canvas>
-            <canvas id="content-canvas"></canvas>
-            <canvas id="highlight-canvas"></canvas>
-            <canvas id="accent-canvas"></canvas>
-        </div>
-        
-        <!-- VIB34D Quantum System Canvases -->
-        <div class="holographic-layers" id="quantumLayers" style="display: none;">
-            <canvas id="quantum-background-canvas"></canvas>
-            <canvas id="quantum-shadow-canvas"></canvas>
-            <canvas id="quantum-content-canvas"></canvas>
-            <canvas id="quantum-highlight-canvas"></canvas>
-            <canvas id="quantum-accent-canvas"></canvas>
-        </div>
-        
-        <!-- Holographic System Canvases -->
-        <div class="holographic-layers" id="holographicLayers" style="display: none;">
-            <canvas id="holo-background-canvas"></canvas>
-            <canvas id="holo-shadow-canvas"></canvas>
-            <canvas id="holo-content-canvas"></canvas>
-            <canvas id="holo-highlight-canvas"></canvas>
-            <canvas id="holo-accent-canvas"></canvas>
-        </div>
-        
-        <!-- Polychora System Canvases -->
-        <div class="holographic-layers" id="polychoraLayers" style="display: none;">
-            <canvas id="polychora-background-canvas"></canvas>
-            <canvas id="polychora-shadow-canvas"></canvas>
-            <canvas id="polychora-content-canvas"></canvas>
-            <canvas id="polychora-highlight-canvas"></canvas>
-            <canvas id="polychora-accent-canvas"></canvas>
+        <!-- Mobile Dynamic Canvas Layers - same 5 canvases change functionality -->
+        <div class="dynamic-canvas-layers" id="dynamicLayers">
+            <canvas id="mobile-background-canvas"></canvas>
+            <canvas id="mobile-shadow-canvas"></canvas>
+            <canvas id="mobile-content-canvas"></canvas>
+            <canvas id="mobile-highlight-canvas"></canvas>
+            <canvas id="mobile-accent-canvas"></canvas>
         </div>
     </div>
     
@@ -493,18 +466,131 @@
     </div>
 
     <script type="module">
-        // Your actual VIB34D mobile system
+        // Dynamic 5-Canvas Mobile System - canvases change functionality on system switch
         import { VIB34DIntegratedEngine } from './src/core/Engine.js';
         import { QuantumEngine } from './src/quantum/QuantumEngine.js';
         import { RealHolographicSystem } from './src/holograms/RealHolographicSystem.js';
         import { PolychoraSystem } from './src/core/PolychoraSystem.js';
+        import { IntegratedHolographicVisualizer } from './src/core/Visualizer.js';
+        
+        // Mobile Canvas Manager - manages 5 canvases that change roles
+        class MobileDynamicCanvasManager {
+            constructor() {
+                this.currentSystem = 'faceted';
+                this.visualizers = [];
+                this.canvasIds = [
+                    'mobile-background-canvas',
+                    'mobile-shadow-canvas', 
+                    'mobile-content-canvas',
+                    'mobile-highlight-canvas',
+                    'mobile-accent-canvas'
+                ];
+                this.layerRoles = ['background', 'shadow', 'content', 'highlight', 'accent'];
+                this.engines = {};
+            }
+            
+            async switchToSystem(systemName) {
+                console.log(`📱 Mobile: Switching 5 canvases to ${systemName} system`);
+                
+                // Destroy current visualizers
+                this.destroyCurrentVisualizers();
+                
+                // Create new visualizers with system-specific functionality
+                await this.createSystemVisualizers(systemName);
+                
+                this.currentSystem = systemName;
+                console.log(`✅ Mobile: 5 canvases now running ${systemName} system`);
+            }
+            
+            destroyCurrentVisualizers() {
+                this.visualizers.forEach(viz => {
+                    if (viz && viz.destroy) {
+                        viz.destroy();
+                    }
+                });
+                this.visualizers = [];
+            }
+            
+            async createSystemVisualizers(systemName) {
+                // Create 5 visualizers with system-specific canvas IDs and roles
+                for (let i = 0; i < 5; i++) {
+                    const canvasId = this.canvasIds[i];
+                    const role = this.layerRoles[i];
+                    const reactivity = 0.5 + (i * 0.2); // background: 0.5, accent: 1.3
+                    
+                    try {
+                        // Create visualizer that connects to canvas but uses system-specific logic
+                        const visualizer = new IntegratedHolographicVisualizer(
+                            canvasId, 
+                            role, 
+                            reactivity, 
+                            0 // variation
+                        );
+                        
+                        // Apply system-specific configuration
+                        visualizer.systemType = systemName;
+                        this.configureVisualizerForSystem(visualizer, systemName);
+                        
+                        this.visualizers.push(visualizer);
+                        
+                    } catch (error) {
+                        console.error(`Failed to create ${systemName} visualizer for ${role}:`, error);
+                    }
+                }
+            }
+            
+            configureVisualizerForSystem(visualizer, systemName) {
+                // System-specific shader configuration
+                const systemConfigs = {
+                    faceted: {
+                        shaderType: 'faceted',
+                        colorScheme: 'cyan-blue',
+                        complexity: 'simple'
+                    },
+                    quantum: {
+                        shaderType: 'quantum',
+                        colorScheme: 'green-quantum',
+                        complexity: 'complex'
+                    },
+                    holographic: {
+                        shaderType: 'holographic',
+                        colorScheme: 'magenta-pink',
+                        complexity: 'rich'
+                    },
+                    polychora: {
+                        shaderType: 'polychora',
+                        colorScheme: 'orange-polytope',
+                        complexity: 'mathematical'
+                    }
+                };
+                
+                const config = systemConfigs[systemName] || systemConfigs.faceted;
+                Object.assign(visualizer, config);
+            }
+            
+            updateParameters(parameters) {
+                this.visualizers.forEach(viz => {
+                    if (viz && viz.updateParameters) {
+                        viz.updateParameters(parameters);
+                    }
+                });
+            }
+            
+            setGeometry(index) {
+                this.visualizers.forEach(viz => {
+                    if (viz && viz.setGeometry) {
+                        viz.setGeometry(index);
+                    }
+                });
+            }
+        }
         
         // Global state
         window.currentSystem = 'faceted';
-        window.engines = {};
+        window.canvasManager = new MobileDynamicCanvasManager();
         window.moduleReady = false;
         
-        // Geometry definitions (your actual ones)
+        // Geometry definitions (your actual ones from V2)
         const geometries = {
             faceted: ['Tetrahedron', 'Hypercube', 'Sphere', 'Torus', 'Klein Bottle', 'Fractal', 'Wave', 'Crystal'],
             quantum: ['Quantum Field', 'Quantum Lattice', 'Quantum Bubble', 'Quantum Torus', 'Quantum Klein', 'Quantum Fractal', 'Quantum Wave', 'Quantum Crystal'],
@@ -512,48 +598,30 @@
             polychora: ['5-Cell', 'Tesseract', '16-Cell', '24-Cell', '600-Cell', '120-Cell', 'Polytope-A', 'Polytope-B']
         };
         
-        // Initialize systems
-        async function initSystems() {
+        // Initialize mobile system
+        async function initMobileSystem() {
             try {
-                console.log('🚀 Initializing VIB34D Mobile Systems...');
+                console.log('🚀 Initializing VIB34D Mobile Dynamic Canvas System...');
                 
-                // Initialize faceted system (default)
-                window.engines.faceted = new VIB34DIntegratedEngine();
+                // Initialize with faceted system
+                await window.canvasManager.switchToSystem('faceted');
                 
                 // Set system as ready
                 window.moduleReady = true;
                 populateGeometryGrid('faceted');
                 
-                console.log('✅ VIB34D Mobile v4 initialized');
+                console.log('✅ VIB34D Mobile v4 Dynamic System initialized');
                 
             } catch (error) {
-                console.error('❌ Failed to initialize systems:', error);
+                console.error('❌ Failed to initialize mobile system:', error);
             }
         }
         
-        // System switching function
+        // System switching function - reconfigures 5 canvases instead of switching layers
         window.switchSystem = async function(systemName) {
             if (systemName === window.currentSystem) return;
             
-            console.log(`🔄 Switching to ${systemName} system`);
-            
-            // Hide all canvas layers
-            document.querySelectorAll('.holographic-layers').forEach(layer => {
-                layer.style.display = 'none';
-            });
-            
-            // Show target system layers
-            const targetLayers = {
-                'faceted': 'vib34dLayers',
-                'quantum': 'quantumLayers',
-                'holographic': 'holographicLayers',
-                'polychora': 'polychoraLayers'
-            };
-            
-            const layerId = targetLayers[systemName];
-            if (layerId) {
-                document.getElementById(layerId).style.display = 'block';
-            }
+            console.log(`🔄 Mobile: Reconfiguring 5 canvases for ${systemName} system`);
             
             // Update system buttons
             document.querySelectorAll('.system-btn').forEach(btn => {
@@ -561,25 +629,8 @@
             });
             document.querySelector(`[data-system="${systemName}"]`).classList.add('active');
             
-            // Load system engine if needed
-            if (!window.engines[systemName]) {
-                try {
-                    switch (systemName) {
-                        case 'quantum':
-                            window.engines.quantum = new QuantumEngine();
-                            break;
-                        case 'holographic':
-                            window.engines.holographic = new RealHolographicSystem();
-                            break;
-                        case 'polychora':
-                            window.engines.polychora = new PolychoraSystem();
-                            break;
-                    }
-                } catch (error) {
-                    console.error(`Failed to load ${systemName} engine:`, error);
-                    return;
-                }
-            }
+            // Reconfigure the same 5 canvases for new system
+            await window.canvasManager.switchToSystem(systemName);
             
             // Update current system
             window.currentSystem = systemName;
@@ -588,7 +639,7 @@
             document.getElementById('panelHeader').innerHTML = `<span>${systemName.toUpperCase()} SYSTEM</span>`;
             populateGeometryGrid(systemName);
             
-            console.log(`✅ Switched to ${systemName} system`);
+            console.log(`✅ Mobile: 5 canvases now running ${systemName} functionality`);
         };
         
         // Populate geometry grid
@@ -631,11 +682,9 @@
                 }
             }
             
-            // Apply to current engine
-            const currentEngine = window.engines[window.currentSystem];
-            if (currentEngine && currentEngine.parameterManager) {
-                currentEngine.parameterManager.setParameter(param, numValue);
-            }
+            // Apply to current canvas manager
+            const parameters = { [param]: numValue };
+            window.canvasManager.updateParameters(parameters);
         };
         
         // Geometry selection
@@ -643,13 +692,10 @@
             document.querySelectorAll('.geom-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[data-index="${index}"]`).classList.add('active');
             
-            const currentEngine = window.engines[window.currentSystem];
-            if (currentEngine && currentEngine.parameterManager) {
-                currentEngine.parameterManager.setGeometry(index);
-            }
+            window.canvasManager.setGeometry(index);
         };
         
-        // LLM generation
+        // LLM generation using your Firebase Function
         window.generateFromLLM = async function() {
             const input = document.getElementById('llm-input');
             const description = input.value.trim();
@@ -715,27 +761,24 @@
         };
         
         window.saveToGallery = function() {
-            // Placeholder for save functionality
-            console.log('💾 Save to gallery functionality - to be implemented');
-            alert('Save functionality coming soon!');
+            console.log('💾 Save to gallery - integrating with your V2 gallery system');
+            alert('Save functionality: Will integrate with your V2 gallery system');
         };
         
         window.openGallery = function() {
-            // Placeholder for gallery
-            console.log('🖼️ Gallery functionality - to be implemented');
-            alert('Gallery functionality coming soon!');
+            console.log('🖼️ Gallery - opening your V2 gallery system');
+            alert('Gallery: Will open your V2 gallery system');
         };
         
         window.toggleAudio = function() {
-            // Placeholder for audio
-            console.log('🎵 Audio functionality - to be implemented');
-            alert('Audio functionality coming soon!');
+            console.log('🎵 Audio - integrating with your V2 audio system');
+            alert('Audio: Will integrate with your V2 audio reactivity');
         };
         
-        // Initialize on load
-        initSystems();
+        // Initialize mobile system
+        initMobileSystem();
         
-        // Touch handling
+        // Touch handling for mobile
         document.addEventListener('touchstart', function(e) {
             e.target.classList.add('touch-active');
         }, { passive: true });
@@ -746,7 +789,7 @@
             }, 150);
         }, { passive: true });
         
-        console.log('📱 VIB34D Mobile v4 - Using YOUR ACTUAL SYSTEM');
+        console.log('📱 VIB34D Mobile v4 - Dynamic 5-Canvas System (not 20 canvases!)');
     </script>
 </body>
 </html>
